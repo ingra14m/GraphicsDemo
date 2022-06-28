@@ -138,8 +138,8 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
 
         for (int i = 0; i < 3; ++i) {
             t.setVertex(i, v[i].head<3>());
-            t.setVertex(i, v[i].head<3>());
-            t.setVertex(i, v[i].head<3>());
+//            t.setVertex(i, v[i].head<3>());  // 我认为有问题，只需要设置一次就行了
+//            t.setVertex(i, v[i].head<3>());
         }
 
         t.setColor(0, 255.0, 0.0, 0.0);
