@@ -81,11 +81,19 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
     Eigen::Matrix4f mvp = projection * view * model;
     for (auto &i : ind) {
         Triangle t;
+//        std::cout << view << std::endl;
         Eigen::Vector4f v[] = {
                 mvp * to_vec4(buf[i[0]], 1.0f),
                 mvp * to_vec4(buf[i[1]], 1.0f),
                 mvp * to_vec4(buf[i[2]], 1.0f)
         };
+
+//        for (int i = 0; i < 3; i++)
+//        {
+//            std :: cout << v[i] << std::endl;
+//            system("PAUSE");
+//        }
+
         //Homogeneous division
         for (auto &vec : v) {
             vec /= vec.w();
