@@ -88,11 +88,6 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
                 mvp * to_vec4(buf[i[2]], 1.0f)
         };
 
-//        for (int i = 0; i < 3; i++)
-//        {
-//            std :: cout << v[i] << std::endl;
-//            system("PAUSE");
-//        }
 
         //Homogeneous division
         for (auto &vec : v) {
