@@ -336,6 +336,7 @@ Eigen::Vector3f bump_fragment_shader(const fragment_shader_payload &payload) {
     Eigen::Vector3f b = normal.cross(t);
     // Matrix TBN = [t b n]
     Eigen::Matrix3f TBN;
+    // 切线空间转视角空间
     TBN << t.x(), b.x(), normal.x(),
             t.y(), b.y(), normal.y(),
             t.z(), b.z(), normal.z();

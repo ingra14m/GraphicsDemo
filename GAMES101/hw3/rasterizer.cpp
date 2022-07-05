@@ -176,6 +176,15 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
                 mvp * t->v[1],
                 mvp * t->v[2]
         };
+
+//        std::cout << mvp << std::endl;
+//        system("PAUSE");
+
+//        for (auto& vec : v){
+//            std::cout << vec << std::endl;
+//            system("PAUSE");
+//        }
+
         //Homogeneous division
         for (auto &vec : v) {
             vec.x() /= vec.w();
@@ -268,7 +277,7 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t, const std::array<Eig
             // If so, use the following code to get the interpolated z value.
             auto[alpha, beta, gamma] = computeBarycentric2D(x + 0.5, y + 0.5, t.v);
 
-            float Z = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+            float Z = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());  // 这里用w是不准确的，因为在本例中接近才这样
             float zp = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
             zp *= Z;  // 插值得到该像素点的深度
 
