@@ -86,7 +86,7 @@ namespace rst {
     private:
         void draw_line(Eigen::Vector3f begin, Eigen::Vector3f end);
 
-        void rasterize_triangle(const Triangle &t, const std::array<Eigen::Vector3f, 3> &world_pos);
+        void rasterize_triangle(const Triangle &t, const std::array<Eigen::Vector3f, 3> &world_pos, bool use_origin = true);
 
         // VERTEX SHADER -> MVP -> Clipping -> /.W -> VIEWPORT -> DRAWLINE/DRAWTRI -> FRAGSHADER
 

@@ -396,8 +396,6 @@ int main(int argc, const char **argv) {
 
     // 最简单的理解方式，就是把std::function当成一个函数指针，重载的参数是<返回值(输入参数)>
     std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader = phong_fragment_shader;
-//    std::function<Eigen::Vector3f(fragment_shader_payload)> active_shader = texture_fragment_shader;
-
 
     if (argc >= 2) {
         command_line = true;
@@ -431,6 +429,16 @@ int main(int argc, const char **argv) {
     int key = 0;
     int frame_count = 0;
 
+//    auto model = get_model_matrix(angle);
+//    auto view = get_view_matrix(eye_pos);
+//    auto projection = get_projection_matrix(45.0, 1, 0.1, 50);
+//
+//    auto mv = view * model;
+//    std::cout << mv << std::endl;
+//    std::cout << std::endl;
+//    auto mvp = projection * mv;
+//    std::cout << mvp << std::endl;
+
     if (command_line) {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
         r.set_model(get_model_matrix(angle));
@@ -446,6 +454,7 @@ int main(int argc, const char **argv) {
 
         return 0;
     }
+
 
     while (key != 27) {
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
