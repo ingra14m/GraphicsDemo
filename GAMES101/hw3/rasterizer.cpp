@@ -152,8 +152,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
     float f1 = (50 - 0.1) / 2.0;
     float f2 = (50 + 0.1) / 2.0;
 
-//    int count = 0;
-
+    int count = 0;
     Eigen::Matrix4f mvp = projection * view * model;
     for (const auto &t:TriangleList) {
         Triangle newtri = *t;  // const &的指针，虽然不能修改，但是可以用另一个指针去改
@@ -172,7 +171,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
             return v.template head<3>();
         });
 
-
+        // 经过透视投影，会把原来负的xyz映射回正的
         Eigen::Vector4f v[] = {
                 mvp * t->v[0],
                 mvp * t->v[1],
@@ -204,7 +203,8 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
         for (auto &vert : v) {
             vert.x() = 0.5 * width * (vert.x() + 1.0);
             vert.y() = 0.5 * height * (vert.y() + 1.0);
-            vert.z() = vert.z() * f1 + f2;  // 我动了这里
+            vert.z() = vert.z() * f1 + f2;
+//            vert.z() = 5 - (50 - 0.1) * vert.z();
         }
 
         for (int i = 0; i < 3; ++i) {
@@ -237,6 +237,7 @@ interpolate(float alpha, float beta, float gamma, const Eigen::Vector2f &vert1, 
             const Eigen::Vector2f &vert3, float weight) {
     auto u = (alpha * vert1[0] + beta * vert2[0] + gamma * vert3[0]);
     auto v = (alpha * vert1[1] + beta * vert2[1] + gamma * vert3[1]);
+//    auto v = (alpha * vert1[1] + beta * vert2[1] + gamma * vert3[1]);
 
     u /= weight;
     v /= weight;
@@ -268,7 +269,7 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t, const std::array<Eig
 
 
     // TODO : set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
-
+    int count = 0;
     // without anti-alising
     for (int x = x_min; x <= x_max; x++) {
         for (int y = y_min; y <= y_max; y++) {
@@ -323,8 +324,21 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t, const std::array<Eig
 
 //                float Z = 1.0 / (new_alpha + new_beta + new_gamma);
                 float Z = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());  // 求得了view空间下的Z
-                float zp = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
-                zp *= Z;
+//                float zp = alpha * v[0].z() + beta * v[1].z() + gamma * v[2].z();
+
+                float zp = alpha * v[0].z() + beta * v[1].z() + gamma * v[2].z();  // 正交投影矩阵的z。别的z不知道为什么不行，总是会出现大面积的阴影。回头应该讨论一下
+//                std::cout << zp << std::endl;
+//                zp = alpha + beta + gamma;
+//                zp *= Z;
+//                zp *= Z;
+//                zp2 *= Z;
+//
+//                if (count == 0)
+//                {
+//                    std::cout << zp << std::endl;
+//                    std::cout << zp2 << std::endl;
+//                    count++;
+//                }
 
                 // compare the current depth with the value in depth buffer
                 if (depth_buf[get_index(x, y)] > zp

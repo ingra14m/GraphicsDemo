@@ -385,6 +385,7 @@ int main(int argc, const char **argv) {
                 t->setTexCoord(j, Vector2f(mesh.Vertices[i + j].TextureCoordinate.X,
                                            mesh.Vertices[i + j].TextureCoordinate.Y));
             }
+//            std::cout<<t->v[0] << std::endl;
             TriangleList.push_back(t);
         }
     }
