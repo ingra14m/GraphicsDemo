@@ -79,6 +79,7 @@ float fresnel(const Vector3f &I, const Vector3f &N, const float &ior) {
 // \param[out] *hitObject stores the pointer to the intersected object (used to retrieve material information, etc.)
 // \param isShadowRay is it a shadow ray. We can return from the function sooner as soon as we have found a hit.
 // [/comment]
+// 这里trace只是去trace object，light与object是不同的类
 std::optional <hit_payload> trace(
         const Vector3f &orig, const Vector3f &dir,
         const std::vector <std::unique_ptr<Object>> &objects) {
@@ -88,6 +89,8 @@ std::optional <hit_payload> trace(
         float tNearK = kInfinity;
         uint32_t indexK;
         Vector2f uvK;
+
+        // 遍历物体，看是否有交点。orig是原点，dir是方向，剩下三个是输出参数
         if (object->intersect(orig, dir, tNearK, indexK, uvK) && tNearK < tNear) {
             payload.emplace();
             payload->hit_obj = object.get();
@@ -129,13 +132,15 @@ Vector3f castRay(
         Vector3f hitPoint = orig + dir * payload->tNear;
         Vector3f N; // normal
         Vector2f st; // st coordinates
-        // 引用还可以传递匿名参数？
+
+        // 真的有占位符，不写变量名，只是占个位置
         payload->hit_obj->getSurfaceProperties(hitPoint, dir, payload->index, payload->uv, N, st);
         switch (payload->hit_obj->materialType) {
             case REFLECTION_AND_REFRACTION: {
                 Vector3f reflectionDirection = normalize(reflect(dir, N));
                 Vector3f refractionDirection = normalize(refract(dir, N, payload->hit_obj->ior));
-                Vector3f reflectionRayOrig = (dotProduct(reflectionDirection, N) < 0) ?
+                Vector3f reflectionRayOrig = (dotProduct(reflectionDirection, N) < 0)
+                                             ?  // 这个epsilon主要是防止精度问题导致在表面反射，所以加个epsilon
                                              hitPoint - N * scene.epsilon :
                                              hitPoint + N * scene.epsilon;
                 Vector3f refractionRayOrig = (dotProduct(refractionDirection, N) < 0) ?
@@ -156,7 +161,7 @@ Vector3f castRay(
                 hitColor = castRay(reflectionRayOrig, reflectionDirection, scene, depth + 1) * kr;
                 break;
             }
-            default: {
+            default: {  // 这里就是diffuse
                 // [comment]
                 // We use the Phong illumation model int the default case. The phong model
                 // is composed of a diffuse and a specular reflection component.
@@ -182,8 +187,11 @@ Vector3f castRay(
                     lightAmt += inShadow ? 0 : light->intensity * LdotN;
                     Vector3f reflectionDirection = reflect(-lightDir, N);
 
+                    // 这个地方没考虑Shadow
                     specularColor += powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
                                           payload->hit_obj->specularExponent) * light->intensity;
+//                    specularColor += inShadow ? 0 : powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
+//                                          payload->hit_obj->specularExponent) * light->intensity;
                 }
 
                 hitColor = lightAmt * payload->hit_obj->evalDiffuseColor(st) * payload->hit_obj->Kd +
@@ -222,7 +230,7 @@ void Renderer::Render(const Scene &scene) {
             // generate ray from each pixel--(0,width-1)x(0,height-1)->(-1,1)x(-1,1)
 
             // this is a stupid way, we redo the job of projection matrix
-            // 将屏幕中的某一点转移到view空间，也就是透视投影前的3D空尽。这里默认场景中的object都位于同一深度z下，最少是物体的中心点
+            // 将屏幕中的某一点转移到view空间，也就是透视投影前的3D空间。这里默认场景中的object都位于同一深度z下，最少是物体的中心点
             // 这里相机是000，其实也就是世界空间
             float x = ((i + 0.5f) * 2.0f / (float) scene.width - 1.0f) * scale * imageAspectRatio;
             float y = (1 - (j + 0.5f) * 2.0f / (float) scene.height) * scale;

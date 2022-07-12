@@ -4,6 +4,7 @@
 
 #include <cstring>
 
+// Möller-Trumbore Algorithm，判断直线是否与三角形相交
 bool rayTriangleIntersect(const Vector3f &v0, const Vector3f &v1, const Vector3f &v2, const Vector3f &orig,
                           const Vector3f &dir, float &tnear, float &u, float &v) {
     // TODO: Implement this function that tests whether the triangle
@@ -21,7 +22,9 @@ bool rayTriangleIntersect(const Vector3f &v0, const Vector3f &v1, const Vector3f
     v = 1.0f / dotProduct(S1, E1) * dotProduct(S2, dir);
 
     // if the answer is valid, return true;
-    if (tnear > 0.0f && v >= 0.0f && v <= 1.0f && u >= 0.0f && u <= 1.0f) return true;
+
+//    if (tnear >= 0.0f && v >= 0.0f && v <= 1.0f && u >= 0.0f && u <= 1.0f) return true;  // 这个判断条件错了，应该是严格u+v + a = 1，并不要求每一个都在0-1
+    if (tnear >= 0 && u >= 0 && v >= 0 && (u + v) <= 1) return true;
     else return false;
 }
 
