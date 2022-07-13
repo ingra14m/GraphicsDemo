@@ -251,14 +251,27 @@ void Renderer::Render(const Scene &scene) {
     }
 
     // save framebuffer to file
-    FILE *fp = fopen("binary.ppm", "wb");
-    (void) fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
-    for (auto i = 0; i < scene.height * scene.width; ++i) {
-        static unsigned char color[3];
-        color[0] = (255 * clamp(0, 1, framebuffer[i].x));
-        color[1] = (255 * clamp(0, 1, framebuffer[i].y));
-        color[2] = (255 * clamp(0, 1, framebuffer[i].z));
-        fwrite(color, 1, 3, fp);
+
+    // P6 表示颜色的三个值存成二进制，P3表示存成ascii。P6的大小会更小一点
+//    FILE *fp = fopen("binary.ppm", "wb");
+//    (void) fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
+//    for (auto i = 0; i < scene.height * scene.width; ++i) {
+//        static unsigned char color[3];
+//        color[0] = (255 * clamp(0, 1, framebuffer[i].x));
+//        color[1] = (255 * clamp(0, 1, framebuffer[i].y));
+//        color[2] = (255 * clamp(0, 1, framebuffer[i].z));
+//        fwrite(color, 1, 3, fp);
+//    }
+//    fclose(fp);
+    std::ofstream image;
+    image.open("ascii_without_specular_shadow.ppm");
+    image << "P3\n" << scene.width << ' ' << scene.height << "\n255\n";
+    for (auto i = 0; i < scene.height * scene.width; i++)
+    {
+        int color0 = 255 * clamp(0, 1, framebuffer[i].x);
+        int color1 = 255 * clamp(0, 1, framebuffer[i].y);
+        int color2 = 255 * clamp(0, 1, framebuffer[i].z);
+        image << color0 << ' ' << color1 << ' ' << color2 << '\n';
+
     }
-    fclose(fp);
 }
