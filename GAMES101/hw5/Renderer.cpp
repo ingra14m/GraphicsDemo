@@ -187,11 +187,11 @@ Vector3f castRay(
                     lightAmt += inShadow ? 0 : light->intensity * LdotN;
                     Vector3f reflectionDirection = reflect(-lightDir, N);
 
-                    // 这个地方没考虑Shadow
-                    specularColor += powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
-                                          payload->hit_obj->specularExponent) * light->intensity;
-//                    specularColor += inShadow ? 0 : powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
+                    // 原来这个地方没考虑Shadow，是我自己加的
+//                    specularColor += powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
 //                                          payload->hit_obj->specularExponent) * light->intensity;
+                    specularColor += inShadow ? 0 : powf(std::max(0.f, -dotProduct(reflectionDirection, dir)),
+                                          payload->hit_obj->specularExponent) * light->intensity;
                 }
 
                 hitColor = lightAmt * payload->hit_obj->evalDiffuseColor(st) * payload->hit_obj->Kd +
