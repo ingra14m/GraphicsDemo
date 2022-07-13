@@ -204,6 +204,7 @@ void rst::rasterizer::draw(std::vector<Triangle *> &TriangleList) {
             vert.x() = 0.5 * width * (vert.x() + 1.0);
             vert.y() = 0.5 * height * (vert.y() + 1.0);
             vert.z() = vert.z() * f1 + f2;
+//            vert.z() = (1 / vert.z() - 1 / 0.1) / (1 / 50 - 1 / 0.1);  // 使用1/z
 //            vert.z() = 5 - (50 - 0.1) * vert.z();
         }
 
